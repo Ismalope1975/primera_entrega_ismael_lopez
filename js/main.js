@@ -1,11 +1,8 @@
+
 window.onload = (event) => {
-    console.log('Pagina cargada');
+    console.log('Pagina html cargada');
 
-    function toUpperCase(name) {
-        return name.toUpperCase();
-    }
-
-    //validar numero de cedula formato 8 digitos y sin guiones
+     //validar numero de cedula formato 8 digitos y sin guiones
     function validarCedula(doc) {
         if (doc.length !== 8) return false;
         for (let i = 0; i < doc.length; i++) {
@@ -41,7 +38,7 @@ window.onload = (event) => {
                 return 0;
         }
     }
-    //calcular totales de financiacion
+    //calcular totales de financiacion, cuotas , intereses
     function calculartotales(ingresopromedio, totalpedido, cuotas) {
         const interestRango = calculointeres(cuotas);
         const montototal = totalpedido * (1 + interestRango);
@@ -51,7 +48,6 @@ window.onload = (event) => {
         if (montocuota > maximovalorcuota) {
             return `La cuota no puede superar el 25% de los ingresos mensuales. Máximo permitido: ${maximovalorcuota.toFixed(2)}`;
         }
-
         return {
             montocuota: montocuota.toFixed(2),
             totalaPagar: montototal.toFixed(2)
@@ -63,48 +59,58 @@ window.onload = (event) => {
 
         while (true) {
 
-            vendedorName = toUpperCase(prompt("Ingrese el nombre del vendedor:"));
+            vendedorName = prompt("Ingrese el nombre del vendedor:").toUpperCase();
             while (vendedorName === "" || contieneNumeros(vendedorName)) {
-                vendedorName = toUpperCase(prompt("El nombre del vendedor no puede estar vacío ni contener números. Ingrese el nombre del vendedor:"));
+                vendedorName = prompt("El nombre del vendedor no puede estar vacío ni contener números. Ingrese el nombre del vendedor:").toUpperCase();
             }
-            clientName = toUpperCase(prompt("Ingrese el nombre del cliente:"));
+            clientName = prompt("Ingrese el nombre del cliente:").toUpperCase();
             while (clientName === "" || contieneNumeros(clientName)) {
-                clientName = toUpperCase(prompt("El nombre del cliente no puede estar vacío ni contener números. Ingrese el nombre del cliente:"));
+                clientName = prompt("El nombre del cliente no puede estar vacío ni contener números. Ingrese el nombre del cliente:").toUpperCase();
             }
-            apellidoname = toUpperCase(prompt("Ingrese el apellido del cliente:"));
+            apellidoname = prompt("Ingrese el apellido del cliente:").toUpperCase();
             while (apellidoname === "" || contieneNumeros(apellidoname)) {
-                apellidoname = toUpperCase(prompt("El nombre del cliente no puede estar vacío ni contener números. Ingrese el nombre del cliente:"));
+                apellidoname = prompt("El nombre del cliente no puede estar vacío ni contener números. Ingrese el nombre del cliente:").toUpperCase();
             }
-
-            documentoId = prompt("Ingrese el documento de identidad (8 dígitos):");
-            if (!validarCedula(documentoId)) {
-                alert("Documento de identidad inválido. Debe tener 8 dígitos sin guiones");
-                continue;
+            while (true) {
+                documentoId = prompt("Ingrese el documento de identidad (8 dígitos):");
+                if (!validarCedula(documentoId)) {
+                    alert("Documento de identidad inválido. Debe tener 8 dígitos sin guiones");
+                    continue;
+                }
+                break;
             }
-
-            ingresopromedio = parseFloat(prompt("Ingrese los ingresos mensuales promedio:"));
-            if (isNaN(ingresopromedio)) {
-                alert("Por favor, ingrese un valor numérico válido para los ingresos mensuales.");
-                continue;
+            while (true) {
+                ingresopromedio = parseFloat(prompt("Digite los ingresos mensuales promedio:"));
+                
+                if (isNaN(ingresopromedio)) {
+                    alert("Por favor, ingrese un valor válido para los ingresos mensuales.");
+                } else if (ingresopromedio <= 20000) {
+                    alert("Los ingresos mensuales deben ser mayores a 20,000.");
+                } else {
+                    break;
+                }
             }
-
-            totalpedido = parseFloat(prompt("Ingrese el monto que desea solicitar en préstamo:"));
-            if (isNaN(totalpedido)) {
-                alert("Por favor, ingrese un valor numérico válido para el monto del préstamo.");
-                continue;
+            while (true) {
+                totalpedido = parseFloat(prompt("Ingrese el monto que desea solicitar en préstamo:"));
+                
+                if (isNaN(totalpedido)) {
+                    alert("Por favor, ingrese un valor numérico válido para el monto del préstamo.");
+                } else if (totalpedido > ingresopromedio * 6) {
+                    alert("El monto del préstamo no puede ser mayor a 6 veces los ingresos mensuales.");
+                } else {
+                    break;
+                }
             }
-
-            if (totalpedido > ingresopromedio * 6) {
-                alert("El monto del préstamo no puede ser mayor a 6 veces los ingresos mensuales.");
-                continue;
-            }
-
+            while (true) {
             cuotas = parseInt(prompt("Ingrese la cantidad de cuotas:"));
             if (isNaN(cuotas) || cuotas < 1 || cuotas > 36) {
                 alert("Por favor, ingrese un valor numérico válido para la cantidad de cuotas (entre 1 y 36).");
                 continue;
             }
             break;
+            }
+
+        break;
         }
 
         const result = calculartotales(ingresopromedio, totalpedido, cuotas);
@@ -117,13 +123,12 @@ window.onload = (event) => {
             mensaje +="\nNombre del vendedor: " + vendedorName;
             mensaje +="\nNombre del cliente: " + apellidoname + " " + clientName;
             mensaje +="\nDocumento de identidad: " + documentoId;
-            mensaje +="\nMonto: $" + totalpedido.toFixed(2).toLocaleString();
+            mensaje +="\nMonto: $" + totalpedido.toFixed(2);
             mensaje +="\nPlazo financiación: " + cuotas + " Meses";
-            mensaje +="\nValor de Cuota: $" + result.montocuota.toLocaleString() + " pesos";
-            mensaje +="\nTotal final a pagar: " + result.totalaPagar.toLocaleString();
+            mensaje +="\nValor de Cuota: $" + result.montocuota + " pesos";
+            mensaje +="\nTotal final a pagar: " + result.totalaPagar;
             alert(mensaje)
         }
-
 
         if (confirm("¿Desea generar otra simulación?")) {
             main();
